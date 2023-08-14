@@ -1,7 +1,7 @@
 # STA-380-Part-2-Assignment
 Project work for STA 380 consisting of 9 questions
 
-Group Member: Amey Ghate(ag84957), Rathil Madihalli(rm63782), Arushi Sethi(as228398), HaoXiang Yi(hy6769)
+Group Members: Amey Ghate(ag84957), Rathil Madihalli(rm63782), Arushi Sethi(as228398), HaoXiang Yi(hy6769)
 
 Probability practice's solution is in question1 folder - PDF file is uploaded along with the word document corresponding to the PDF.
 
