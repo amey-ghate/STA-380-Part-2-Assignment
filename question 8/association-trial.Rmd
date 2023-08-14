@@ -1,0 +1,99 @@
+---
+title: "Association"
+author: "Amey Ghate"
+date: "2023-08-10"
+output: pdf_document
+---
+## **Association rule mining**
+
+```{r echo=FALSE, include=FALSE}
+## Load the required packages
+library(tidyverse)
+library(arules) 
+library(arulesViz)
+```
+
+### **Problem**
+For data on grocery purchases in groceries.txt, find some interesting association rules for these shopping baskets. The data file is a list of shopping baskets: one person's basket for each row, with multiple items per row separated by commas. Pick your own thresholds for lift and confidence; just be clear what these thresholds are and say why you picked them. Do your discovered item sets make sense? Present your discoveries in an interesting and visually appealing way.
+
+#### Presenting the structure of the raw dataset:
+
+```{r echo=FALSE}
+## Read in the dataset and explore the structure
+setwd("C:/Users/Amey/Amey - College and further prep/UT Austin - College/ML/Unsupervised/Project/Submission/Question8")
+groceries_raw = scan("groceries.txt", what = "", sep = "\n")
+head(groceries_raw)
+```
+
+```{r echo=FALSE, include=FALSE}
+str(groceries_raw)
+summary(groceries_raw)
+```
+
+We transform the data into a "transactions" class before applying the apriori algorithm.
+The summary of the dataset reveals the following:
+
+1. There are total of 9835 transactions in our dataset
+2. Whole milk is the present in 2513 baskets and is the most frequently bought item
+3. More than half of the transactions have 4 or lesser items per basket
+
+```{r echo=FALSE, include=FALSE}
+## Process the data and cast it as a "transactions" class
+groceries = strsplit(groceries_raw, ",")
+groctrans = as(groceries, "transactions")
+summary(groctrans)
+```
+
+```{r echo=FALSE}
+itemFrequencyPlot(groctrans, topN = 20)
+```
+
+#### **Let's explore rules with support > 0.05, confidence > 0.1 and length <= 2 using the 'apriori' algorithm**
+There are only 6 rules generated because of the high support and low confidence level. We also notice that most relationships in this item set include whole milk, yogurt and rolls/buns which is in accordance with the transaction frequency plot we saw earlier. These are some of the most frequently bought items.
+
+```{r echo=FALSE, include=FALSE}
+grocrules_1 = apriori(groctrans, 
+                     parameter=list(support=0.05, confidence=.1, minlen=2))
+```
+
+```{r echo=FALSE}
+arules::inspect(grocrules_1)
+plot(grocrules_1, method='graph')
+```
+
+#### **Let's decrease support further and increase confidence slightly with support > 0.02, confidence > 0.2 and length <= 2**
+
+This item set contains 72 rules and includes a lot more items. However, whole milk still seems to be a common occurence.
+
+```{r echo=FALSE, include=FALSE}
+grocrules_2 = apriori(groctrans, 
+                     parameter=list(support=0.02, confidence=.2, minlen=2))
+arules::inspect(grocrules_2)
+```
+
+```{r echo=FALSE}
+plot(head(grocrules_2,15,by='lift'), method='graph')
+```
+
+
+#### **Let us increase the confidence level and decrease the support further. Let's explore rules with support > 0.0015, confidence > 0.8 and length <= 2**
+
+
+```{r echo=FALSE, include=FALSE}
+grocrules_3 = apriori(groctrans, 
+                     parameter=list(support=0.0015, confidence=0.8, minlen=2))
+arules::inspect(grocrules_3)
+```
+
+```{r echo=FALSE, fig.align='left'}
+plot(head(grocrules_3, 5, by='lift'), method='graph')
+```
+
+#### **Summary**
+From the derived association rules and presented graphs, we can infer the following:
+
+1. Customers purchasing red wine or liquor often gravitate towards bottled beer.
+2. Individuals who purchase vegetables like root vegetables are more inclined to buy additional vegetables, much like those who buy vegetable/fruit juice.
+3. Whole milk stands out as the most frequently bought item among customers. Additionally, when individuals purchase dairy products such as curd, yogurt or butter, they are more likely to also buy whole milk.
+
+The aforementioned association rules are logical when considering consumer behavior. Typically, shoppers exhibit patterns in their purchasing habits, often buying complementary or similar items during the same shopping trip. For instance, someone buying certain types of vegetables might be inclined to purchase other related vegetables or products that fit into their meal plans or dietary preferences.
